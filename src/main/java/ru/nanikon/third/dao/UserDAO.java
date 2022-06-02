@@ -34,8 +34,8 @@ public class UserDAO {
       int id;
       try (Session session = HibernateUtil.getSessionFactory().openSession()) {
          Transaction transaction = session.beginTransaction();
+         System.out.println("user id " + user.getSessionId());
          id = (int) session.save(user);
-         System.out.println("user id " + id + user.getSessionId());
          transaction.commit();
       } catch (PersistenceException e) {
          id = findBySessionId(user.getSessionId()).getId();
