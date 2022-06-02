@@ -22,7 +22,7 @@ import java.io.Serializable;
         uniqueConstraints = @UniqueConstraint(columnNames = "session_id"))
 public class UserEntity implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "session_id")
     private String sessionId;

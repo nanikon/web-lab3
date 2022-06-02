@@ -4,6 +4,8 @@ import ru.nanikon.third.entity.ShotEntity;
 import lombok.Getter;
 import lombok.Setter;
 import ru.nanikon.third.entity.UserEntity;
+import ru.nanikon.third.jmx.counter.Counter;
+import ru.nanikon.third.jmx.percentile.Percentile;
 import ru.nanikon.third.parser.ShotListJsonParser;
 import ru.nanikon.third.service.AreaService;
 import ru.nanikon.third.service.ShotService;
@@ -18,6 +20,9 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,6 +47,9 @@ public class ShotListBean {
    @ManagedProperty(value = "#{parser}")
    private ShotListJsonParser shotListJsonParser;
 
+   private Counter counter = new Counter();
+   private Percentile percentile = new Percentile();
+
    @PostConstruct
    private void init() {
       areaService.addShape(new Rhomb(Quarter.FIRST));
@@ -56,6 +64,17 @@ public class ShotListBean {
             userService.addUser(new UserEntity(sessionId));
          }
       }
+
+      try {
+         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+         ObjectName nameCounter = new ObjectName("ru.nanikon.third:type=Counter");
+         ObjectName namePercentile = new ObjectName("ru.nanikon.third:type=Percentile");
+         mbs.registerMBean(counter, nameCounter);
+         mbs.registerMBean(percentile, namePercentile);
+      } catch (Exception e) {
+         System.out.println("Can't register bean");
+         e.printStackTrace();
+      }
    }
 
    public void addShot(ShotBean shot) {
@@ -63,6 +82,10 @@ public class ShotListBean {
       UserEntity owner = userService.getUserBySessionId(sessionId);
       ShotEntity newShot = new ShotEntity(owner, shot.getX(), Math.ceil(shot.getY() * scale) / scale, shot.getR());
       areaService.checkArea(newShot);
+
+      counter.increment(newShot);
+      percentile.update(counter.getAllShot(), counter.getError());
+
       shotService.addShot(newShot);
       shotList.add(newShot);
       jsonList = shotListJsonParser.fromObjectToJson(shotList);

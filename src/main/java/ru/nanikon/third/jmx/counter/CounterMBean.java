@@ -1,4 +1,4 @@
-package ru.nanikon.third.jmx.inter;
+package ru.nanikon.third.jmx.counter;
 
 import ru.nanikon.third.entity.ShotEntity;
 
@@ -6,7 +6,6 @@ import ru.nanikon.third.entity.ShotEntity;
  * @author Natalia Nikonova
  */
 public interface CounterMBean {
-    void increment(ShotEntity shot);
     int getAllShot();
     int getError();
 }

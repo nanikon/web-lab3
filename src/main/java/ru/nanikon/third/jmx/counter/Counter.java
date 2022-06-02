@@ -1,7 +1,6 @@
-package ru.nanikon.third.jmx.impl;
+package ru.nanikon.third.jmx.counter;
 
 import ru.nanikon.third.entity.ShotEntity;
-import ru.nanikon.third.jmx.inter.CounterMBean;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.Notification;
@@ -15,10 +14,9 @@ public class Counter extends NotificationBroadcasterSupport implements CounterMB
     private int error = 0;
     private long sequenceNumber = 1;
 
-    @Override
     public void increment(ShotEntity shot) {
         allShot++;
-        if (shot.isHit()) {
+        if (!shot.isHit()) {
             error++;
         }
         if (allShot % 10 == 0) {

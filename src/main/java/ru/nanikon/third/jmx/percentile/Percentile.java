@@ -1,6 +1,4 @@
-package ru.nanikon.third.jmx.impl;
-
-import ru.nanikon.third.jmx.inter.PercentileMBean;
+package ru.nanikon.third.jmx.percentile;
 
 /**
  * @author Natalia Nikonova
@@ -13,8 +11,7 @@ public class Percentile implements PercentileMBean {
         return value;
     }
 
-    @Override
-    public void setValue(double newValue) {
-        this.value = newValue;
+    public void update(int allCount, int error) {
+        this.value = (float) error / allCount * 100;
     }
 }
